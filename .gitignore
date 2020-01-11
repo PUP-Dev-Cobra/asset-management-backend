@@ -1,0 +1,4 @@
+.vscode
+penv
+*/**/__pycache__
+!.gitignore
