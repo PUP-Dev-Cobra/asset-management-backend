@@ -21,4 +21,15 @@ This is the backend application for the Asset Management
 
 ## Migration
 
+Migration is a tool to help manage the changes in the database. It is similar to git that changes needs to be commited (i.e: migrate) and pushed (i.e: upgrade/downgrade) for changes to reflect on the server
+
+### How it Works
+
+Change the declared table properties in the models folder files.
+
+In the terminal for changing
+* `python migrations.py db migrate -m "describe the changes done in the db"`
+* `python migrations.py db upgrate`
+
+
 
