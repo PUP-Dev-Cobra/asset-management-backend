@@ -28,8 +28,13 @@ Migration is a tool to help manage the changes in the database. It is similar to
 Change the declared table properties in the models folder files.
 
 In the terminal for changing
-* `python migrations.py db migrate -m "describe the changes done in the db"`
-* `python migrations.py db upgrate`
+* `flask db migrate -m "describe the changes done in the db"`
+* `flask db upgrate`
 
+### Seeders
 
+Setup initial data to make the program workable for the first time. see `seeders.py`
+
+In the terminal
+* `python seeders.py` in the root directory of the project
 

@@ -1,4 +1,5 @@
 from internals.app import db
+from models.loans import Loans
 
 
 class Members(db.Model):
@@ -24,4 +25,4 @@ class Members(db.Model):
   contact_no = db.Column(db.String, nullable=False)
   tin_oca = db.Column(db.String, nullable=True)
   status = db.Column(db.String, nullable=False)
-  loans = db.relationship('Loans', lazy=True)
+  loans = db.relationship('Loans', lazy=True, foreign_keys=[Loans.member_id])

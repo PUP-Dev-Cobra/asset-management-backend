@@ -27,7 +27,12 @@ class Users(db.Model):
     )
     member_id = db.Column(
         db.Integer,
+        db.ForeignKey('members.id'),
         nullable=True
+    )
+    status = db.Column(
+        db.String(10),
+        nullable=False
     )
     reset_password_hash = db.Column(
         db.String,
@@ -44,15 +49,13 @@ class Users(db.Model):
     created_by_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
-        nullable=False
+        nullable=True
     )
     updated_by_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
         nullable=True
     )
-    created_by = db.relationship('Users', uselist=False)
-    updated_by = db.relationship('Users', uselist=False)
 
     def hashPassword(textPassword):
         salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
@@ -76,3 +79,9 @@ class Users(db.Model):
         )
         pwdHash = binascii.hexlify(pwdHash).decode('ascii')
         return pwdHash == storedPassword
+
+    def verifyUser(self, email, password):
+        user = self.query.filter_by(email=email).first()
+        storedPassword = user.password
+        isMatch = Users.verifyPassword(storedPassword, password)
+        return isMatch
