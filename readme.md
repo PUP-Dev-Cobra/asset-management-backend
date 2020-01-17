@@ -11,8 +11,8 @@ This is the backend application for the Asset Management
 ## Pre-Install Instructions
 
 * Craete a virtual phython evnironment `virtualenv penv`
-* run the pip install `pip -r requirements.txt`
-* run `python main.py` to run server
+* run the pip install `pip install -r requirements.txt`
+* run `flask run` to run server
 
 ## Configuration
 

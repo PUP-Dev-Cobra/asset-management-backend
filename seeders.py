@@ -62,4 +62,4 @@ def seed_options():
 
 
 seed_admin_user()
-# seed_options()
+seed_options()

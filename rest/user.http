@@ -1,0 +1,7 @@
+POST http://localhost:5000/authenticate
+content-type: application/json
+
+{
+  "email": "admin@mail.com",
+  "password": "Test2019"
+}
