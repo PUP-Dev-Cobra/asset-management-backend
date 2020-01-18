@@ -1,4 +1,5 @@
 from internals.app import db
+from marshmallow import Schema, fields
 import hashlib, binascii, os
 
 
@@ -82,6 +83,35 @@ class Users(db.Model):
 
     def verifyUser(self, email, password):
         user = self.query.filter_by(email=email).first()
-        storedPassword = user.password
-        isMatch = Users.verifyPassword(storedPassword, password)
+
+        if user.status == 'disabled':
+            return {'error': 'User is disabled'}
+        else:
+            storedPassword = user.password
+            isMatch = Users.verifyPassword(storedPassword, password)
+
+            if isMatch:
+                return {
+                    'isMatch': isMatch,
+                    'id': user.id,
+                    'email': user.email,
+                    'uuid': user.uuid,
+                    'user_type': user.user_type
+                }
+            else:
+                return {
+                    'error': 'Invalid username and password'
+                }
+
         return isMatch
+
+
+class UserSchema(Schema):
+    uuid = fields.Str()
+    email = fields.Email()
+    status = fields.Str()
+    user_type = fields.Str()
+
+
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)

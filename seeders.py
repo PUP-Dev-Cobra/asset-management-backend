@@ -26,7 +26,6 @@ def seed_admin_user():
           created_by_id=None
       )
       db.session.add(admin)
-      print(admin.id)
       db.session.commit()
     else:
       print('Admin alredy exist')

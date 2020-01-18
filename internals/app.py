@@ -21,7 +21,7 @@ def create_app(config_class=DevelopmentConfig):
     from models import users, options, members, loans
 
     from routes import user
-    api.add_resource(user.User, '/user')
+    api.add_resource(user.User, '/user', '/user/<string:uuid>')
     api.add_resource(user.List, '/user/list')
     api.add_resource(user.Authenticate, '/authenticate')
 

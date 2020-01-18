@@ -1,7 +1,46 @@
-POST http://localhost:5000/authenticate
+@authToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc01hdGNoIjp0cnVlLCJpZCI6MTAsImVtYWlsIjoiYWRtaW5AbWFpbC5jb20iLCJ1dWlkIjoiOGRhNjM5ODItNjhiOC00YWRiLWJhZTAtYzM5NjI0ZTUzMTkwIiwidXNlcl90eXBlIjoiYWRtaW4iLCJleHAiOjE1NzkzNDUyMjV9.TIupSjpzfPPXgC_tnM6hCKf-O0qGodQOIjDPMV3P7Uc
+@baseUrl = http://localhost:5000
+@uuid = 8da63982-68b8-4adb-bae0-c39624e53190
+
+### Authenticate
+POST {{baseUrl}}/authenticate
 content-type: application/json
 
 {
   "email": "admin@mail.com",
   "password": "Test2019"
 }
+
+### GET specific user
+GET {{baseUrl}}/user/{{uuid}}
+Authorization: {{authToken}}
+
+### POST specific user
+POST {{baseUrl}}/user
+content-type: application/json
+Authorization: {{authToken}}
+
+{
+  "email": "admin2@mail.com",
+  "password": "password",
+  "user_type": "admin",
+  "status": "active"
+}
+
+### PUT specific user
+PUT {{baseUrl}}/user/{{uuid}}
+content-type: application/json
+Authorization: {{authToken}}
+
+{
+  "email": "admin3@mail.com"
+}
+
+### DELETE specific user
+DELETE {{baseUrl}}/user/{{uuid}}
+Authorization: {{authToken}}
+
+### GET User list
+GET {{baseUrl}}/user/list
+Authorization: {{authToken}}
+
