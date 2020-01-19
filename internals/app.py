@@ -20,9 +20,10 @@ def create_app(config_class=DevelopmentConfig):
     migrate.init_app(app, db)
     from models import users, options, members, loans
 
-    from routes import user
+    from routes import user, option
     api.add_resource(user.User, '/user', '/user/<string:uuid>')
     api.add_resource(user.List, '/user/list')
+    api.add_resource(option.Options, '/options')
     api.add_resource(user.Authenticate, '/authenticate')
 
     return app

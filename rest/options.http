@@ -1,0 +1,8 @@
+@authToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc01hdGNoIjp0cnVlLCJpZCI6MTAsImVtYWlsIjoiYWRtaW5AbWFpbC5jb20iLCJ1dWlkIjoiOGRhNjM5ODItNjhiOC00YWRiLWJhZTAtYzM5NjI0ZTUzMTkwIiwidXNlcl90eXBlIjoiYWRtaW4iLCJleHAiOjE1Nzk0MTY0Njh9.Z5ZBnE6Lsj4rLUx-h1VqcbE-JPNgIdzJOu_7CYyz4fo
+@baseUrl = http://localhost:5000
+
+### Options
+GET {{baseUrl}}/options?option_name=user_status
+Authorization: {{authToken}}
+
+
