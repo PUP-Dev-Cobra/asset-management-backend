@@ -1,4 +1,5 @@
 from flask import request, jsonify, make_response, current_app
+from flask_cors import cross_origin
 from flask_restful import Resource, reqparse
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -102,15 +103,18 @@ class Authenticate(Resource):
 
     def post(self):
         args = parser.parse_args()
-        result = UserModel().verifyUser(args['email'], args['password'])
+        try:
+            result = UserModel().verifyUser(args['email'], args['password'])
 
-        if result.get('error'):
-            return make_response(jsonify(result), 403)
-        else:
-            token = jwt.encode({
-                **result,
-                'exp': datetime.utcnow() + timedelta(minutes=100),
-            },
-                current_app.config['SECRET_KEY']
-            )
-            return jsonify({'token': token.decode('UTF-8')})
+            if result.get('error'):
+                return make_response(jsonify(result), 403)
+            else:
+                token = jwt.encode({
+                    **result,
+                    'exp': datetime.utcnow() + timedelta(minutes=100),
+                },
+                    current_app.config['SECRET_KEY']
+                )
+                return jsonify({'token': token.decode('UTF-8')})
+        except:
+            return make_response({'error': 'Something is wrong'}, 500)

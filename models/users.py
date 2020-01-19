@@ -83,8 +83,11 @@ class Users(db.Model):
 
     def verifyUser(self, email, password):
         user = self.query.filter_by(email=email).first()
+        error = {'error': 'Invalid username and password'}
 
-        if user.status == 'disabled':
+        if user is None:
+            return error
+        elif user.status == 'disabled':
             return {'error': 'User is disabled'}
         else:
             storedPassword = user.password
@@ -99,9 +102,7 @@ class Users(db.Model):
                     'user_type': user.user_type
                 }
             else:
-                return {
-                    'error': 'Invalid username and password'
-                }
+                return error
 
         return isMatch
 

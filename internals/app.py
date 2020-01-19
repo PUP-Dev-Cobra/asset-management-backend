@@ -12,9 +12,9 @@ migrate = Migrate()
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(DevelopmentConfig)
-    CORS(app)
 
     api = Api(app)
+    CORS(app)
 
     db.init_app(app)
     migrate.init_app(app, db)
