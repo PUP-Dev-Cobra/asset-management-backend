@@ -38,12 +38,17 @@ class User(Resource):
         }
 
         try:
-            userParams = UserModel(**params)
-            db.session.add(userParams)
-            db.session.commit()
+            userEmail = UserModel.query.filter_by(
+                email=params.get('email')).first()
 
-            return {'response': True}
-        except:
+            if userEmail is None:
+                userParams = UserModel(**params)
+                db.session.add(userParams)
+                db.session.commit()
+
+                return {'response': userParams.uuid}
+            return make_response({'error': 'Email is already used'}, 500)
+        except NameError:
             return make_response({'error': 'Something is wrong'}, 500)
 
     @token_required
@@ -62,10 +67,17 @@ class User(Resource):
                 params['password'])
 
         try:
-            UserModel.query.filter_by(uuid=uuid).update(updateParams)
-            db.session.commit()
+            isEmailUsed = UserModel.query.filter(
+                UserModel.uuid != uuid
+            ).filter(
+                UserModel.email == params.get('email')
+            ).first()
+            if isEmailUsed is None:
+                UserModel.query.filter_by(uuid=uuid).update(updateParams)
+                db.session.commit()
 
-            return {'response': True}
+                return {'response': True}
+            return make_response({'error': 'Email already used'}, 500)
         except:
             return make_response({'error': 'Something is wrong'}, 500)
 

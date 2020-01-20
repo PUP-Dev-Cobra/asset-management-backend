@@ -16,6 +16,11 @@ class Users(db.Model):
         nullable=False,
         unique=True
     )
+    name = db.Column(
+        db.String,
+        nullable=False,
+        default='Generic Name'
+    )
     email = db.Column(
         db.String(100),
         nullable=False,
@@ -87,7 +92,7 @@ class Users(db.Model):
 
         if user is None:
             return error
-        elif user.status == 'disabled':
+        elif user.status == 'disable':
             return {'error': 'User is disabled'}
         else:
             storedPassword = user.password
@@ -109,6 +114,7 @@ class Users(db.Model):
 
 class UserSchema(Schema):
     uuid = fields.Str()
+    name = fields.Str()
     email = fields.Email()
     status = fields.Str()
     user_type = fields.Str()

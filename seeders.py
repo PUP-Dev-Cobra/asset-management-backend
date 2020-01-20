@@ -18,6 +18,7 @@ def seed_admin_user():
     if (ifAdminExist is None):
       admin = Users(
           uuid=uuid4(),
+          name='Admin User',
           email='admin@mail.com',
           password=Users.hashPassword('Test2019'),
           user_type='admin',
@@ -42,6 +43,12 @@ def seed_options():
         Options(option_name='user_status', option_value='disable'),
         Options(option_name='user_status', option_value='pending')
     ]
+    userType = [
+        Options(option_name='user_type', option_value='teller'),
+        Options(option_name='user_type', option_value='admin'),
+        Options(option_name='user_type', option_value='approver'),
+        Options(option_name='user_type', option_value='member'),
+    ]
     gender = [
         Options(option_name='gender', option_value='male'),
         Options(option_name='gender', option_value='female')
@@ -55,6 +62,7 @@ def seed_options():
         Options(option_name='loan_status', option_value='default')
     ]
     dbs.bulk_save_objects(userStatus)
+    dbs.bulk_save_objects(userType)
     dbs.bulk_save_objects(gender)
     dbs.bulk_save_objects(loanStatus)
     dbs.commit()
