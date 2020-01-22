@@ -7,8 +7,8 @@ POST {{baseUrl}}/authenticate
 content-type: application/json
 
 {
-  "email": "admin@mail.com",
-  "password": "Test2019"
+  "email": "teller1@mail.com",
+  "password": "password"
 }
 
 ### GET specific user

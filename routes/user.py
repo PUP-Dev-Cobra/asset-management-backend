@@ -1,5 +1,4 @@
 from flask import request, jsonify, make_response, current_app
-from flask_cors import cross_origin
 from flask_restful import Resource, reqparse
 from datetime import datetime, timedelta
 from uuid import uuid4
