@@ -1,0 +1,39 @@
+@authToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc01hdGNoIjp0cnVlLCJpZCI6MiwiZW1haWwiOiJ0ZWxsZXIxQG1haWwuY29tIiwidXVpZCI6IjkxODI5MzAyLWY5NmMtNGYzZC1hM2RiLWVhZjc5OTMyMmZlZiIsInVzZXJfdHlwZSI6InRlbGxlciIsImV4cCI6MTU3OTc2NTQ0MH0.D1Evfdi6mNkUm1tY6MwuDl656PamjIytLjNw0Zas71Y
+@baseUrl = http://localhost:5000
+
+@uuid = 53035ba8-0cf2-486a-95b7-2e323f202c5e
+
+### Get Loan List
+GET {{baseUrl}}/loan/list
+Authorization: {{authToken}}
+
+### POST Loan
+POST {{baseUrl}}/loan
+Authorization: {{authToken}}
+content-type: application/json
+
+{
+  "member_id": 1,
+  "co_maker_1_id": 2,
+  "co_maker_2_id": 3,
+  "loan_amount": 2000,
+  "payment_term": 12,
+  "service_charge": 1.2,
+  "interest": 1.5,
+  "capital_build_up": 2,
+  "status": "pending_approval"
+}
+
+### PUT
+PUT {{baseUrl}}/loan/{{uuid}}
+Authorization: {{authToken}}
+content-type: application/json
+
+{
+  "loan_amount": 1500
+}
+
+### Get Specific Loan
+GET {{baseUrl}}/loan/{{uuid}}
+Authorization: {{authToken}}
+

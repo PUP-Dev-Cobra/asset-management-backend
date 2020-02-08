@@ -55,16 +55,63 @@ def seed_options():
     ]
     loanStatus = [
         Options(option_name='loan_status', option_value='draft'),
-        Options(option_name='loan_status', option_value='pending_approval'),
+        Options(option_name='loan_status', option_value='pending'),
         Options(option_name='loan_status', option_value='approved'),
         Options(option_name='loan_status', option_value='rejected'),
         Options(option_name='loan_status', option_value='closed'),
         Options(option_name='loan_status', option_value='default')
     ]
+    civilStatus = [
+        Options(option_name='civil_status', option_value='single'),
+        Options(option_name='civil_status', option_value='married'),
+        Options(option_name='civil_status', option_value='widow'),
+    ]
+    sourceOfIncome = [
+        Options(option_name='source_of_income', option_value='1-5K'),
+        Options(option_name='source_of_income', option_value='6-10K'),
+        Options(option_name='source_of_income', option_value='11-20K'),
+        Options(option_name='source_of_income', option_value='21-30K'),
+        Options(option_name='source_of_income', option_value='31K++K'),
+    ]
+    paymentTerm = [
+        Options(option_name='payment_term', option_value='1'),
+        Options(option_name='payment_term', option_value='2'),
+        Options(option_name='payment_term', option_value='3'),
+        Options(option_name='payment_term', option_value='4'),
+        Options(option_name='payment_term', option_value='5'),
+        Options(option_name='payment_term', option_value='6'),
+        Options(option_name='payment_term', option_value='7'),
+        Options(option_name='payment_term', option_value='8'),
+        Options(option_name='payment_term', option_value='9'),
+        Options(option_name='payment_term', option_value='10'),
+        Options(option_name='payment_term', option_value='11'),
+        Options(option_name='payment_term', option_value='12'),
+    ]
+    serviceCharge = [
+        Options(option_name='service_charge', option_value='2')
+    ]
+    interest = [
+        Options(option_name='loan_interest', option_value='1.5')
+    ]
+    capitalBuildUp = [
+        Options(option_name='captial_build_up', option_value='2')
+    ]
+    memberStatus = [
+        Options(option_name='member_status', option_value='draft'),
+        Options(option_name='member_status', option_value='pending'),
+        Options(option_name='member_status', option_value='approved')
+    ]
     dbs.bulk_save_objects(userStatus)
     dbs.bulk_save_objects(userType)
     dbs.bulk_save_objects(gender)
     dbs.bulk_save_objects(loanStatus)
+    dbs.bulk_save_objects(civilStatus)
+    dbs.bulk_save_objects(sourceOfIncome)
+    dbs.bulk_save_objects(paymentTerm)
+    dbs.bulk_save_objects(serviceCharge)
+    dbs.bulk_save_objects(interest)
+    dbs.bulk_save_objects(capitalBuildUp)
+    dbs.bulk_save_objects(memberStatus)
     dbs.commit()
 
 

@@ -1,0 +1,36 @@
+@authToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc01hdGNoIjp0cnVlLCJpZCI6MiwiZW1haWwiOiJ0ZWxsZXIxQG1haWwuY29tIiwidXVpZCI6IjkxODI5MzAyLWY5NmMtNGYzZC1hM2RiLWVhZjc5OTMyMmZlZiIsInVzZXJfdHlwZSI6InRlbGxlciIsImV4cCI6MTU3OTc2NTQ0MH0.D1Evfdi6mNkUm1tY6MwuDl656PamjIytLjNw0Zas71Y
+@baseUrl = http://localhost:5000
+@uuid = ee0f2ecc-b262-4dbb-b5fe-93263584e0a3
+
+### Member List
+GET {{baseUrl}}/member/list
+Authorization: {{authToken}}
+
+### Create Member
+POST {{baseUrl}}/member
+Authorization: {{authToken}}
+content-type: application/json
+
+{
+  "first_name": "Jeremiah",
+  "last_name": "Solidus",
+  "middle_name": "Jimenez",
+  "nickname": "Solidemo",
+  "dob": "1988-01-02",
+  "age": 30,
+  "gender": "male",
+  "civil_status": "single",
+  "address": "Sample address",
+  "contact_no": "xxx-xxx-xxxxx",
+  "tin_oca": "AAAA-BBBB-CCC",
+  "status": "pending"
+}
+
+### Update Member
+PUT {{baseUrl}}/member/{{uuid}}
+Authorization: {{authToken}}
+content-type: application/json
+
+{
+  "first_name": "Solidad1"
+}

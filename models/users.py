@@ -1,5 +1,6 @@
 from internals.app import db
 from marshmallow import Schema, fields
+from schemas.users import UserSchema
 import hashlib, binascii, os
 
 
@@ -110,14 +111,6 @@ class Users(db.Model):
                 return error
 
         return isMatch
-
-
-class UserSchema(Schema):
-    uuid = fields.Str()
-    name = fields.Str()
-    email = fields.Email()
-    status = fields.Str()
-    user_type = fields.Str()
 
 
 user_schema = UserSchema()
