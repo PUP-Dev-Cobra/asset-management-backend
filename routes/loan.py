@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from internals.app import db
 from internals.utils import token_required, decode_token, user_check
-from models.loans import Loans as LoanModel, loan_schema, loan_list
+from models.loans import Loans as LoanModel, loan_schema
 from models.members import Members as MembersModel, member_schema
 
 
@@ -16,7 +16,7 @@ class Loan(Resource):
     def get(self, uuid):
         try:
             loans = LoanModel.query.filter_by(uuid=uuid).first()
-            results = loan_schema.dump(loans)
+            results = loan_schema().dump(loans)
             return {'response': results}
         except:
             return {'error': 'Something went wrong'}
@@ -96,7 +96,16 @@ class LoanList(Resource):
     def get(self):
         try:
             loans = LoanModel.query.all()
-            result = loan_list.dump(loans)
+            result = loan_schema(
+                many=True,
+                only=[
+                    'uuid',
+                    'member',
+                    'loan_amount',
+                    'status',
+                    'loan_payment_start_date'
+                ])\
+                .dump(loans)
 
             return {'response': result}
         except Exception as e:

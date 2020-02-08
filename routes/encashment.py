@@ -57,3 +57,16 @@ class Encashment(Resource):
             return {'response': encashmentData.uuid}
         except NameError:
             return make_response({'error': 'Something is wrong'}, 500)
+
+
+class EncashmentList(Resource):
+
+    @token_required
+    @user_check(user_type=['teller'])
+    def get(self):
+        try:
+            encashmentInfo = EncashmentModel.query.all()
+            result = encashment_schema(many=True).dump(encashmentInfo)
+            return {'response': result}
+        except NameError:
+            return make_response({'error': 'Something is wrong'}, 500)

@@ -6,7 +6,7 @@ from uuid import uuid4
 from internals.app import db
 from internals.utils import token_required, decode_token, user_check
 
-from models.reciepts import Reciepts as RecieptsModel
+from models.reciepts import Reciepts as RecieptsModel, reciept_schema
 from models.loans import Loans as LoansModel
 
 
@@ -38,3 +38,17 @@ class Reciept(Resource):
             return {'response': recieptInfo.uuid}
         except NameError:
             return make_response({'error': 'Something is wrong'}, 500)
+
+
+class RecieptList(Resource):
+
+    @token_required
+    @user_check(user_type=['teller'])
+    def get(self):
+        try:
+            recieptInfo = RecieptsModel.query.all()
+            result = reciept_schema(many=True).dump(recieptInfo)
+            return {'response': result}
+        except NameError as e:
+            print(e)
+            return make_response({'error': 'Somethign is wrong'}, 500)
