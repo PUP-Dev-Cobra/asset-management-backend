@@ -6,6 +6,7 @@ from uuid import uuid4
 from internals.app import db
 from internals.utils import token_required, decode_token, user_check
 
+from models.members import Members as MembersModel
 from models.reciepts import Reciepts as RecieptsModel, reciept_schema
 from models.loans import Loans as LoansModel
 
@@ -44,9 +45,15 @@ class RecieptList(Resource):
 
     @token_required
     @user_check(user_type=['teller'])
-    def get(self):
+    def get(self, uuid):
         try:
-            recieptInfo = RecieptsModel.query.all()
+            recieptInfo = RecieptsModel.query
+            if (uuid):
+                memberInfo = MembersModel.query.filter_by(uuid=uuid).first()
+                recieptInfo = recieptInfo\
+                    .join(LoansModel)\
+                    .filter_by(member_id=memberInfo.id)
+            recieptInfo = recieptInfo.all()
             result = reciept_schema(many=True).dump(recieptInfo)
             return {'response': result}
         except NameError as e:

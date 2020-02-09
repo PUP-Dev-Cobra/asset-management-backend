@@ -194,16 +194,18 @@ class MemberList(Resource):
     @user_check(user_type=['teller'])
     def get(self):
         try:
-            members = MemberModel.query.all()
+            members = MemberModel.query.order_by(MemberModel.status.asc()).all()
             result = member_schema(many=True, only=[
                 "uuid",
                 "first_name",
                 "last_name",
+                "middle_name",
                 "address",
                 "contact_no",
                 "status",
             ]).dump(members)
 
             return {'response': result}
-        except:
+        except NameError as e:
+            print(e)
             return make_response({'error': 'Something is wrong'}, 500)
