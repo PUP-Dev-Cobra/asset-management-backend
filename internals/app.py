@@ -44,8 +44,11 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(loan.LoanList, '/loan/list')
     api.add_resource(loan.MemberLoanList, '/loan/members')
     api.add_resource(loan.MemberLoanShares, '/loan/member/share')
+    api.add_resource(disbrusment.ListDisbursments, '/disbursment/list')
     api.add_resource(disbrusment.Disbursment, '/disbursment', '/disbursment/<string:uuid>')
     api.add_resource(encashment.Encashment, '/encashment', '/encashment/<string:uuid>')
+    api.add_resource(encashment.EncashmentList, '/encashment/list')
     api.add_resource(reciept.Reciept, '/reciept', '/reciept/<string:uuid>')
+    api.add_resource(reciept.RecieptList, '/reciept/list')
 
     return app

@@ -50,6 +50,11 @@ class Disbursments(db.Model):
         db.String,
         nullable=False
     )
+    encashment = db.relationship(
+        'Encashments',
+        lazy=True,
+        backref='disbursmentInfo'
+    )
 
 
 def disbursment_schema(many=False, **kwargs):

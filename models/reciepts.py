@@ -1,5 +1,7 @@
 from internals.app import db
 
+from schemas.reciept import RecieptSchema
+
 
 class Reciepts(db.Model):
 
@@ -54,3 +56,7 @@ class Reciepts(db.Model):
         db.ForeignKey('users.id'),
         nullable=True
     )
+
+
+def reciept_schema(many=False, **kwargs):
+    return RecieptSchema(many=many, **kwargs)

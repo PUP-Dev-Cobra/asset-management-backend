@@ -104,9 +104,10 @@ class Loans(db.Model):
     )
     reciepts = db.relationship(
         'Reciepts',
+        backref='loanInfo',
         lazy=True
     )
 
 
-loan_schema = LoanSchema()
-loan_list = LoanSchema(many=True)
+def loan_schema(many=False, **kwargs):
+    return LoanSchema(many=many, **kwargs)
