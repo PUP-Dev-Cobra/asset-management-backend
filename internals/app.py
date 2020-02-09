@@ -49,6 +49,6 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(encashment.Encashment, '/encashment', '/encashment/<string:uuid>')
     api.add_resource(encashment.EncashmentList, '/encashment/list')
     api.add_resource(reciept.Reciept, '/reciept', '/reciept/<string:uuid>')
-    api.add_resource(reciept.RecieptList, '/reciept/list')
+    api.add_resource(reciept.RecieptList, '/reciept/list', '/reciept/list/<string:uuid>')
 
     return app
