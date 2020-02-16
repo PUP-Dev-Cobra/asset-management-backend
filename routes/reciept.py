@@ -45,7 +45,7 @@ class RecieptList(Resource):
 
     @token_required
     @user_check(user_type=['teller'])
-    def get(self, uuid):
+    def get(self, uuid=None):
         try:
             recieptInfo = RecieptsModel.query
             if (uuid):
