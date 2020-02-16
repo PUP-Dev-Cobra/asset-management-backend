@@ -12,7 +12,7 @@ from models.members import Members as MembersModel, member_schema
 class Loan(Resource):
 
     @token_required
-    @user_check(user_type=['teller'])
+    @user_check(user_type=['teller', 'approver'])
     def get(self, uuid):
         try:
             loans = LoanModel.query.filter_by(uuid=uuid).first()
@@ -57,20 +57,22 @@ class Loan(Resource):
             return make_response({'error': 'Something is wrong'}, 500)
 
     @token_required
-    @user_check(user_type=['teller'])
+    @user_check(user_type=['teller', 'approver'])
     def put(self, uuid):
         params = request.get_json(force=True)
         userInfo = decode_token()
+        userType = userInfo.get('user_type')
 
-        if "member_id" in params:
+        print(userType)
+        if "member_id" in params and userType == 'teller':
             memberInfo = MembersModel.query.filter_by(uuid=params.get('member_id')).first()
             params['member_id'] = memberInfo.id
 
-        if "co_maker_1_id" in params:
+        if "co_maker_1_id" in params and userType == 'teller':
             memberInfo = MembersModel.query.filter_by(uuid=params.get('co_maker_1_id')).first()
             params['co_maker_1_id'] = memberInfo.id
 
-        if "co_maker_2_id" in params:
+        if "co_maker_2_id" in params and userType == 'teller':
             memberInfo = MembersModel.query.filter_by(uuid=params.get('co_maker_2_id')).first()
             params['co_maker_2_id'] = memberInfo.id
 
@@ -92,7 +94,7 @@ class Loan(Resource):
 class LoanList(Resource):
 
     @token_required
-    @user_check(user_type=['teller'])
+    @user_check(user_type=['teller', 'approver'])
     def get(self):
         try:
             loans = LoanModel.query.all()
@@ -116,10 +118,13 @@ class LoanList(Resource):
 class MemberLoanList(Resource):
 
     @token_required
-    @user_check(user_type=['teller'])
+    @user_check(user_type=['teller', 'approver'])
     def get(self):
         try:
-            members = MembersModel.query.order_by(MembersModel.last_name).all()
+            members = MembersModel\
+                .query\
+                .filter_by(status='approved')\
+                .order_by(MembersModel.last_name).all()
             result = member_schema(many=True, only=[
                 "uuid",
                 "first_name",
@@ -136,7 +141,7 @@ class MemberLoanShares(Resource):
 
     # Fetch the member shares
     @token_required
-    @user_check(user_type=['teller'])
+    @user_check(user_type=['teller', 'approver'])
     def get(self):
         try:
             uuid = request.args.get('uuid')
