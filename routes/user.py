@@ -7,6 +7,7 @@ import jwt
 from internals.app import db
 from internals.utils import token_required, decode_token, user_check
 from models.users import Users as UserModel, users_schema, user_schema
+from models.members import Members as MemberModel
 
 parser = reqparse.RequestParser()
 parser.add_argument('email', type=str, required=True)
@@ -37,8 +38,19 @@ class User(Resource):
         }
 
         try:
-            userEmail = UserModel.query.filter_by(
-                email=params.get('email')).first()
+            if (params['user_type'] == 'member'):
+                memberInfo = MemberModel\
+                    .query\
+                    .filter_by(uuid=params['member_id'])\
+                    .first()
+                params['member_id'] = memberInfo.id
+
+            userEmail = UserModel\
+                .query\
+                .filter_by(
+                    email=params.get('email')
+                )\
+                .first()
 
             if userEmail is None:
                 userParams = UserModel(**params)
@@ -102,8 +114,9 @@ class List(Resource):
     @token_required
     @user_check(user_type=['admin'])
     def get(self):
+        decodeToken = decode_token()
         try:
-            users = UserModel.query.filter_by().all()
+            users = UserModel.query.filter(UserModel.id != decodeToken['id']).all()
             result = users_schema.dump(users)
             return make_response({'response': result}, 200)
         except NameError:
@@ -127,5 +140,5 @@ class Authenticate(Resource):
                     current_app.config['SECRET_KEY']
                 )
                 return jsonify({'token': token.decode('UTF-8')})
-        except:
+        except NameError:
             return make_response({'error': 'Something is wrong'}, 500)

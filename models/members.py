@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields
 
 from internals.app import db
+from models.users import Users
 from models.loans import Loans
 from models.beneficiaries import Beneficiaries
 from models.shares import MemberShares
@@ -123,6 +124,12 @@ class Members(db.Model):
         lazy=True,
         backref='shares',
         foreign_keys=[MemberShares.member_id]
+    )
+    userInfo = db.relationship(
+        Users,
+        lazy=True,
+        backref='memberInfo',
+        foreign_keys=[Users.member_id]
     )
 
 
