@@ -44,7 +44,7 @@ class Reciept(Resource):
 class RecieptList(Resource):
 
     @token_required
-    @user_check(user_type=['teller'])
+    @user_check(user_type=['teller', 'member'])
     def get(self, uuid=None):
         try:
             recieptInfo = RecieptsModel.query

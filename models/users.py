@@ -100,13 +100,17 @@ class Users(db.Model):
             isMatch = Users.verifyPassword(storedPassword, password)
 
             if isMatch:
-                return {
+                jsonToken = {
                     'isMatch': isMatch,
                     'id': user.id,
                     'email': user.email,
                     'uuid': user.uuid,
                     'user_type': user.user_type
                 }
+                if (user.user_type == 'member'):
+                    jsonToken['member_id'] = user.memberInfo.uuid
+
+                return jsonToken
             else:
                 return error
 

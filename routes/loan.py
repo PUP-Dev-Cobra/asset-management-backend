@@ -12,7 +12,7 @@ from models.members import Members as MembersModel, member_schema
 class Loan(Resource):
 
     @token_required
-    @user_check(user_type=['teller', 'approver'])
+    @user_check(user_type=['teller', 'approver', 'member'])
     def get(self, uuid):
         try:
             loans = LoanModel.query.filter_by(uuid=uuid).first()
@@ -118,7 +118,7 @@ class LoanList(Resource):
 class MemberLoanList(Resource):
 
     @token_required
-    @user_check(user_type=['teller', 'approver'])
+    @user_check(user_type=['teller', 'approver', 'member'])
     def get(self):
         try:
             members = MembersModel\
@@ -141,7 +141,7 @@ class MemberLoanShares(Resource):
 
     # Fetch the member shares
     @token_required
-    @user_check(user_type=['teller', 'approver'])
+    @user_check(user_type=['teller', 'approver', 'member'])
     def get(self):
         try:
             uuid = request.args.get('uuid')

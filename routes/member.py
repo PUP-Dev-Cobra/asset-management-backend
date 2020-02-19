@@ -13,7 +13,6 @@ from models.shares import MemberShares as MemberSharesModel
 class Member(Resource):
 
     @token_required
-    @user_check(user_type=['teller', 'approver'])
     def get(self, uuid):
         member = MemberModel.query.filter_by(uuid=uuid).first()
         result = member_schema().dump(member)
@@ -119,7 +118,6 @@ class Member(Resource):
             else:
                 del memberData['beneficiaries']
 
-        print(memberData)
         updateMemberData = {
             **memberData,
             'updated_at': datetime.now(),
@@ -196,10 +194,11 @@ class Member(Resource):
 class MemberList(Resource):
 
     @token_required
-    @user_check(user_type=['teller', 'approver'])
+    @user_check(user_type=['teller', 'approver', 'admin'])
     def get(self):
         try:
-            members = MemberModel.query.order_by(MemberModel.status.asc()).all()
+            membersQuery = MemberModel.query
+            membersQuery = membersQuery.order_by(MemberModel.status.asc()).all()
             result = member_schema(many=True, only=[
                 "uuid",
                 "first_name",
@@ -208,9 +207,8 @@ class MemberList(Resource):
                 "address",
                 "contact_no",
                 "status",
-            ]).dump(members)
+            ]).dump(membersQuery)
 
             return {'response': result}
-        except NameError as e:
-            print(e)
+        except NameError:
             return make_response({'error': 'Something is wrong'}, 500)
