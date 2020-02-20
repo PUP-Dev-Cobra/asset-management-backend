@@ -38,13 +38,6 @@ class User(Resource):
         }
 
         try:
-            if (params['user_type'] == 'member'):
-                memberInfo = MemberModel\
-                    .query\
-                    .filter_by(uuid=params['member_id'])\
-                    .first()
-                params['member_id'] = memberInfo.id
-
             userEmail = UserModel\
                 .query\
                 .filter_by(
