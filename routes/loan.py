@@ -97,7 +97,14 @@ class LoanList(Resource):
     @user_check(user_type=['teller', 'approver'])
     def get(self):
         try:
-            loans = LoanModel.query.all()
+            loans = LoanModel\
+                .query\
+                .order_by(
+                    LoanModel.status.desc(),
+                    LoanModel.updated_at.desc(),
+                    LoanModel.created_at.desc()
+                )\
+                .all()
             result = loan_schema(
                 many=True,
                 only=[
@@ -105,7 +112,9 @@ class LoanList(Resource):
                     'member',
                     'loan_amount',
                     'status',
-                    'loan_payment_start_date'
+                    'loan_payment_start_date',
+                    'created_at',
+                    'updated_at'
                 ])\
                 .dump(loans)
 
@@ -124,7 +133,8 @@ class MemberLoanList(Resource):
             members = MembersModel\
                 .query\
                 .filter_by(status='approved')\
-                .order_by(MembersModel.last_name).all()
+                .order_by(MembersModel.last_name)\
+                .all()
             result = member_schema(many=True, only=[
                 "uuid",
                 "first_name",
