@@ -40,3 +40,5 @@ class LoanSchema(Schema):
     capital_build_up = fields.Float()
     loan_payment_start_date = fields.Date()
     status = fields.Str()
+    created_at = fields.DateTime()
+    updated_at = fields.DateTime()
