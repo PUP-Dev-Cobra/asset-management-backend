@@ -103,6 +103,7 @@ class Member(Resource):
         if userType == 'teller':
             del memberData['shares']
             del memberData['loans']
+            del memberData['created_at']
 
             forDeletion = params.get('forDeletion')
             beneficiaries = None
@@ -198,7 +199,13 @@ class MemberList(Resource):
     def get(self):
         try:
             membersQuery = MemberModel.query
-            membersQuery = membersQuery.order_by(MemberModel.status.asc()).all()
+            membersQuery = membersQuery\
+                .order_by(
+                    MemberModel.status.desc(),
+                    MemberModel.updated_at.desc(),
+                    MemberModel.created_at.desc()
+                )\
+                .all()
             result = member_schema(many=True, only=[
                 "uuid",
                 "first_name",
@@ -207,6 +214,8 @@ class MemberList(Resource):
                 "address",
                 "contact_no",
                 "status",
+                "created_at",
+                "updated_at"
             ]).dump(membersQuery)
 
             return {'response': result}

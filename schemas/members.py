@@ -36,6 +36,8 @@ class MemberSchema(Schema):
     status = fields.Str()
     tin_oca = fields.Str()
     uuid = fields.Str()
+    created_at = fields.DateTime()
+    updated_at = fields.DateTime()
     loans = fields.List(
         fields.Nested(
             LoanSchema
