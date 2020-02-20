@@ -73,9 +73,11 @@ class User(Resource):
             'updated_by_id': decodedToken['id']
         }
 
+        del updateParams['created_at']
+
         if params.get('password'):
-            updateParams['password'] = UserModel.hashPassword(
-                params['password'])
+            updateParams['password'] = UserModel\
+                .hashPassword(params['password'])
 
         try:
             isEmailUsed = UserModel.query.filter(
@@ -89,7 +91,7 @@ class User(Resource):
 
                 return {'response': True}
             return make_response({'error': 'Email already used'}, 500)
-        except:
+        except NameError:
             return make_response({'error': 'Something is wrong'}, 500)
 
     @token_required
@@ -116,7 +118,15 @@ class List(Resource):
     def get(self):
         decodeToken = decode_token()
         try:
-            users = UserModel.query.filter(UserModel.id != decodeToken['id']).all()
+            users = UserModel\
+                .query\
+                .filter(UserModel.id != decodeToken['id'])\
+                .order_by(
+                    UserModel.status.asc(),
+                    UserModel.updated_at.desc(),
+                    UserModel.created_at.desc()
+                )\
+                .all()
             result = users_schema.dump(users)
             return make_response({'response': result}, 200)
         except NameError:

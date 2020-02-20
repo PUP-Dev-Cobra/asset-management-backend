@@ -7,3 +7,5 @@ class UserSchema(Schema):
     email = fields.Email()
     status = fields.Str()
     user_type = fields.Str()
+    updated_at = fields.DateTime()
+    created_at = fields.DateTime()
