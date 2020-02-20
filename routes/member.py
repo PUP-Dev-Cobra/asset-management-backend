@@ -128,21 +128,20 @@ class Member(Resource):
 
         try:
             # Check if there are other member with the same set of details
-            isDuplicateInfo = MemberModel.query.filter(
-                MemberModel.uuid != uuid
-            ).filter(
-                MemberModel.first_name == params.get('first_name')
-            ).filter(
-                MemberModel.last_name == params.get('last_name')
-            ).filter(
-                MemberModel.middle_name == params.get('middle_name')
-            ).filter(
-                MemberModel.dob == params.get('dob')
-            ).first()
+            isDuplicateInfo = MemberModel\
+                .query\
+                .filter(MemberModel.uuid != uuid)\
+                .filter(MemberModel.first_name == params.get('first_name'))\
+                .filter(MemberModel.last_name == params.get('last_name'))\
+                .filter(MemberModel.middle_name == params.get('middle_name'))\
+                .filter(MemberModel.dob == params.get('dob'))\
+                .first()
 
             if isDuplicateInfo is None:
-                MemberModel.query.filter_by(
-                    uuid=uuid).update(updateMemberData)
+                MemberModel\
+                    .query\
+                    .filter_by(uuid=uuid)\
+                    .update(updateMemberData)
                 db.session.commit()
 
                 if userType == 'teller':
@@ -201,6 +200,7 @@ class MemberList(Resource):
         try:
             members = MemberModel.query.order_by(MemberModel.status.asc()).all()
             result = member_schema(many=True, only=[
+                "id",
                 "uuid",
                 "first_name",
                 "last_name",

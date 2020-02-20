@@ -19,6 +19,7 @@ class RecommendedMemberSchema(Schema):
 
 
 class MemberSchema(Schema):
+    id = fields.Int()
     address = fields.Str()
     age = fields.Int()
     civil_status = fields.Str()
