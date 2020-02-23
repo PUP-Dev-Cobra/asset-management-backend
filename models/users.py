@@ -1,6 +1,12 @@
+from flask import current_app, make_response
 from internals.app import db
 from marshmallow import Schema, fields
 from schemas.users import UserSchema
+from internals.app import create_app
+from datetime import datetime
+from internals.mailgun import send_simple_message
+from pathlib import Path
+
 import hashlib, binascii, os
 
 
@@ -63,6 +69,55 @@ class Users(db.Model):
         db.ForeignKey('users.id'),
         nullable=True
     )
+
+    def createForgotPassword(self, email):
+        app = current_app
+        salt = app.config['SALT']
+        domain = app.config['FRONT_END_DOMAIN']
+        time = datetime.now()
+
+        try:
+            user = self.query.filter_by(email=email).first()
+            if user is not None:
+                hashString = "%s%s" % (salt, time.utcnow().isoformat())
+                hashReset = hashlib.md5(hashString.encode('utf-8'))
+                hashUrl = "%sreset-password/%s" % (domain, hashReset.hexdigest())
+
+                self\
+                    .query\
+                    .filter_by(email=email)\
+                    .update({'reset_password_hash': hashReset.hexdigest()})
+
+                send_simple_message(
+                    subject='Reset Password for %s' % (user.name),
+                    text=Path('./templates/email.template.html')
+                    .read_text()
+                    .replace("{{name}}", user.name)
+                    .replace("{{url}}", hashUrl)
+                )
+
+                db.session.commit()
+            return {"response": "User reset cerdentials are sent"}
+        except:
+            return {"response": "User reset cerdentials are sent"}
+
+    def resetPassword(self, resetHash, password):
+        try:
+            user = self.query.filter_by(reset_password_hash=resetHash).first()
+
+            if user is not None:
+                passwordHash = Users.hashPassword(password)
+                self\
+                    .query\
+                    .filter_by(id=user.id)\
+                    .update({
+                        'password': passwordHash,
+                        'reset_password_hash': None
+                    })
+                db.session.commit()
+            return
+        except:
+            raise Exception('Something is wrong')
 
     def hashPassword(textPassword):
         salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')

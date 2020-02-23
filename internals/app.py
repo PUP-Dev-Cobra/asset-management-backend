@@ -38,6 +38,8 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(user.List, '/user/list')
     api.add_resource(option.Options, '/options')
     api.add_resource(user.Authenticate, '/authenticate')
+    api.add_resource(user.CreatePasswordResetHash, '/forgot-password')
+    api.add_resource(user.ForgotPasswordReset, '/reset-password/<string:hash>')
     api.add_resource(member.Member, '/member', '/member/<string:uuid>')
     api.add_resource(member.MemberList, '/member/list')
     api.add_resource(loan.Loan, '/loan', '/loan/<string:uuid>')

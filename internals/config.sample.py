@@ -14,6 +14,10 @@ class DevelopmentConfig(Config):
   SQLALCHEMY_DATABASE_URI = "mssql+pymssql://<username>:<password>@<server>/<db>"
   SQLALCHEMY_TRACK_MODIFICATIONS = False
   DEBUG = True
+  MAILGUN_API_KEY = ''
+  MAILGUN_DOMAIN = ''
+  BASE_EMAIL = []
+  FRONT_END_DOMAIN = ''
 
 
 class TestingConfig(Config):
