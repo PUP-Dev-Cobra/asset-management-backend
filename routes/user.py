@@ -145,3 +145,27 @@ class Authenticate(Resource):
                 return jsonify({'token': token.decode('UTF-8')})
         except NameError:
             return make_response({'error': 'Something is wrong'}, 500)
+
+
+class CreatePasswordResetHash(Resource):
+
+    def post(self):
+        args = request.get_json()
+        try:
+            result = UserModel().createForgotPassword(email=args['email'])
+            return result
+        except NameError as e:
+            print(e)
+            return make_response({'error': 'Something is wrong'}, 500)
+
+
+class ForgotPasswordReset(Resource):
+
+    def post(self, hash):
+        args = request.get_json()
+        try:
+            UserModel()\
+                .resetPassword(resetHash=hash, password=args['password'])
+            return {'response': 'Password is reset'}
+        except:
+            make_response({'response': 'Soemthing is wrong'}, 500)
