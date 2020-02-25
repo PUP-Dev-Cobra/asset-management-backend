@@ -33,7 +33,7 @@ class MemberShares(db.Model):
     created_by_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
-        nullable=False
+        nullable=True
     )
     updated_by_id = db.Column(
         db.Integer,

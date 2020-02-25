@@ -2,12 +2,16 @@ from flask import request, jsonify, make_response
 from flask_restful import Resource
 from datetime import datetime
 from uuid import uuid4
+import locale
 
 from internals.app import db
+from internals.mailgun import send_simple_message
 from internals.utils import token_required, decode_token, user_check
 
 from models.loans import Loans as LoanModel
 from models.disbursments import Disbursments as DisbursmentsModel, disbursment_schema
+
+from pathlib import Path
 
 
 class Disbursment(Resource):
@@ -47,6 +51,17 @@ class Disbursment(Resource):
             }
             disbursmentData = DisbursmentsModel(**params)
             db.session.add(disbursmentData)
+
+            # Send disbursment status notification
+            send_simple_message(
+                subject="%s Cheque is Ready" % (loanData.member.first_name),
+                text=Path('./templates/loanapplication.template.html')
+                .read_text()
+                .replace("{{name}}", loanData.member.first_name)
+                .replace("{{statys}}", "Ready")
+                .replace("{{amount}}", locale.format('%.2f', loanData.net_loan_balance, grouping=True))
+            )
+
             db.session.commit()
 
             return {'response': disbursmentData.uuid}

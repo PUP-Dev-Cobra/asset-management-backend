@@ -16,13 +16,7 @@ class LoanDisbursmentSchema(Schema):
         MemberSchema, 
         only=['first_name', 'last_name', 'middle_name', 'dob', 'uuid']
     )
-    loan_amount = fields.Method('disbursed_amount')
-
-    def disbursed_amount(self, obj):
-        interestAmount = obj.loan_amount * ((obj.interest / 100) * obj.payment_term)
-        service_charge = obj.loan_amount * (obj.service_charge / 100)
-        capital_buildup = obj.loan_amount * (obj.capital_build_up / 100)
-        return obj.loan_amount - interestAmount - service_charge - capital_buildup
+    net_loan_balance = fields.Float()
 
 
 class DisbursmentsSchema(Schema):
@@ -31,4 +25,6 @@ class DisbursmentsSchema(Schema):
     check_voucher = fields.Str()
     check_number = fields.Str()
     status = fields.Str()
+    issue_date = fields.Date()
+    signatory = fields.Str()
     created_at = fields.Date()

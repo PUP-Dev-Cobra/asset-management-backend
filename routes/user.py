@@ -3,6 +3,7 @@ from flask_restful import Resource, reqparse
 from datetime import datetime, timedelta
 from uuid import uuid4
 import jwt
+import arrow
 
 from internals.app import db
 from internals.utils import token_required, decode_token, user_check
@@ -60,6 +61,7 @@ class User(Resource):
     def put(self, uuid):
         params = request.get_json(force=True)
         decodedToken = decode_token()
+
         updateParams = {
             **params,
             'updated_at': datetime.now(),
@@ -79,7 +81,31 @@ class User(Resource):
                 UserModel.email == params.get('email')
             ).first()
             if isEmailUsed is None:
-                UserModel.query.filter_by(uuid=uuid).update(updateParams)
+                UserInfoModel = UserModel.query.filter_by(uuid=uuid)
+                userInfo = UserInfoModel.first()
+
+                backDate = None
+                if updateParams['backdate']:
+                    backDate = updateParams['backdate']
+                    del updateParams['backdate']
+
+                UserInfoModel.update(updateParams)
+
+                if backDate:
+                    memberInfoModel = MemberModel.query.filter_by(id=userInfo.member_id)
+                    memberInfo = memberInfoModel.first()
+                    backDate_date = arrow\
+                        .get(memberInfo.created_at)\
+                        .shift(weeks=-5)\
+                        .to('local')
+
+                    MemberModel\
+                        .query\
+                        .filter_by(id=userInfo.member_id)\
+                        .update({
+                            'created_at': backDate_date.format('YYYY-MM-DD HH:mm:ss')
+                        })
+
                 db.session.commit()
 
                 return {'response': True}

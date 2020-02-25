@@ -28,6 +28,10 @@ class Disbursments(db.Model):
         db.String,
         nullable=False
     )
+    signatory = db.Column(
+        db.String,
+        nullable=False
+    )
     created_at = db.Column(
         db.DATETIME,
         nullable=False
@@ -48,6 +52,10 @@ class Disbursments(db.Model):
     )
     status = db.Column(
         db.String,
+        nullable=False
+    )
+    issue_date = db.Column(
+        db.Date,
         nullable=False
     )
     encashment = db.relationship(

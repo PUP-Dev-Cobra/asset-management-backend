@@ -1,0 +1,66 @@
+<table
+  style="width:538px;background-color:#393836"
+  align="center"
+  cellspacing="0"
+  cellpadding="0"
+>
+	<tbody>
+    <tr>
+		  <td style="height:65px;background-color:#66c0f4;border-bottom:1px solid #4d4b48">
+        <h1 style="padding: 10px; margin: 0;">Invoice Void</h1>
+      </td>
+	  </tr>
+	  <tr>
+	  	<td bgcolor="#17212e">
+			  <table width="470" border="0" align="center" cellpadding="0" cellspacing="0" style="padding-left:5px;padding-right:5px;padding-bottom:10px">
+
+				<tbody>
+          <tr bgcolor="#17212e">
+					  <td style="padding-top:32px">
+					    <span style="padding-top:16px;padding-bottom:16px;font-size:24px;color:#66c0f4;font-family:Arial,Helvetica,sans-serif;font-weight:bold">
+						    Dear {{name}},
+              </span>
+              <br>
+					  </td>
+				  </tr>
+				
+          <tr>
+            <td style="padding-top:12px">
+            <span style="font-size:17px;color:#c6d4df;font-family:Arial,Helvetica,sans-serif;font-weight:bold">
+              <p>
+                This is a system generated email informing you that an invoice is voided
+                by the system. See the information below:
+              </p>
+              <table style='color:#c6d4df' border='1'>
+                <thead>
+                  <tr>
+                    <td>Type</td>
+                    <td>Amount</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{type}}</td>
+                    <td>{{amount}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </span>
+            </td>
+          </tr>
+
+
+				<tr bgcolor="#121a25">
+					<td style="padding:20px;font-size:12px;line-height:17px;color:#c6d4df;font-family:Arial,Helvetica,sans-serif">
+              <p style="padding-bottom:10px;color:#c6d4df">
+                <span style="color:#ffffff;font-weight:bold">If you did not request for this </span> then please change your password, and consider changing your email password as well to ensure your <span class="il">account</span> security.</p>
+					</td>
+				</tr>
+
+      </tbody>
+    </table>
+		</td>
+	</tr>
+  
+</tbody>
+</table>
