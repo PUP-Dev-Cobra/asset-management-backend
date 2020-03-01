@@ -1,8 +1,8 @@
-"""new server
+"""new database
 
-Revision ID: bee4776bda21
-Revises: 5b9f7a66eac9
-Create Date: 2020-02-15 00:21:05.392284
+Revision ID: 68faa4bf224b
+Revises: 
+Create Date: 2020-03-01 16:24:15.101991
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'bee4776bda21'
-down_revision = '5b9f7a66eac9'
+revision = '68faa4bf224b'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -69,21 +69,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('uuid')
-    )
-    op.create_table('member_shares',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('member_id', sa.Integer(), nullable=False),
-    sa.Column('share_count', sa.Integer(), nullable=False),
-    sa.Column('share_per_amount', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DATETIME(), nullable=False),
-    sa.Column('updated_at', sa.DATETIME(), nullable=True),
-    sa.Column('created_by_id', sa.Integer(), nullable=False),
-    sa.Column('updated_by_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['member_id'], ['members.id'], ),
-    sa.ForeignKeyConstraint(['updated_by_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('id')
     )
     op.create_table('loans',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
@@ -163,6 +148,21 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('uuid')
+    )
+    op.create_table('member_shares',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('member_id', sa.Integer(), nullable=False),
+    sa.Column('share_count', sa.Integer(), nullable=False),
+    sa.Column('share_per_amount', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DATETIME(), nullable=False),
+    sa.Column('updated_at', sa.DATETIME(), nullable=True),
+    sa.Column('created_by_id', sa.Integer(), nullable=True),
+    sa.Column('updated_by_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['member_id'], ['members.id'], ),
+    sa.ForeignKeyConstraint(['updated_by_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('id')
     )
     op.create_table('options',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),

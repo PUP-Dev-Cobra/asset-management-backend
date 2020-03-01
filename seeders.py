@@ -96,6 +96,9 @@ def seed_options():
     capitalBuildUp = [
         Options(option_name='captial_build_up', option_value='2')
     ]
+    memberShareOption = [
+        Options(option_name='share_per_amount', option_value='10')
+    ]
     memberStatus = [
         Options(option_name='member_status', option_value='draft'),
         Options(option_name='member_status', option_value='pending'),
@@ -112,6 +115,7 @@ def seed_options():
     dbs.bulk_save_objects(interest)
     dbs.bulk_save_objects(capitalBuildUp)
     dbs.bulk_save_objects(memberStatus)
+    dbs.bulk_save_objects(memberShareOption)
     dbs.commit()
 
 

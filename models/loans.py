@@ -1,5 +1,9 @@
 from internals.app import db
 from schemas.loans import LoanSchema
+from flask_sqlalchemy import sqlalchemy
+
+backref = sqlalchemy.orm.backref
+desc = sqlalchemy.desc
 
 
 class Loans(db.Model):
@@ -95,6 +99,11 @@ class Loans(db.Model):
         'Members',
         foreign_keys=[co_maker_2_id],
         uselist=False
+    )
+    loanInvoice = db.relationship(
+        'Invoices',
+        lazy=True,
+        backref=backref('loanInfo', order_by=desc('Invoices.created_at'))
     )
     disbursment = db.relationship(
         'Disbursments',

@@ -24,7 +24,8 @@ def create_app(config_class=DevelopmentConfig):
         loans,\
         disbursments,\
         encashments,\
-        reciepts
+        reciepts,\
+        invoices
 
     from routes import user,\
         option,\
