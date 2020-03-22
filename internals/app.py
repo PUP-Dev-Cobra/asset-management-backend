@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask_restful import Api
 
 db = SQLAlchemy()
-migrate = Migrate()
+migrate = Migrate(compare_type=True)
 
 
 def create_app(config_class=DevelopmentConfig):
@@ -24,7 +24,8 @@ def create_app(config_class=DevelopmentConfig):
         loans,\
         disbursments,\
         encashments,\
-        reciepts
+        reciepts,\
+        invoices
 
     from routes import user,\
         option,\
@@ -32,7 +33,10 @@ def create_app(config_class=DevelopmentConfig):
         loan,\
         disbrusment,\
         encashment,\
-        reciept
+        reciept,\
+        invoice,\
+        validations,\
+        shares
 
     api.add_resource(user.User, '/user', '/user/<string:uuid>')
     api.add_resource(user.List, '/user/list')
@@ -52,5 +56,12 @@ def create_app(config_class=DevelopmentConfig):
     api.add_resource(encashment.EncashmentList, '/encashment/list')
     api.add_resource(reciept.Reciept, '/reciept', '/reciept/<string:uuid>')
     api.add_resource(reciept.RecieptList, '/reciept/list', '/reciept/list/<string:uuid>')
+    api.add_resource(invoice.Invoice, '/invoice/<string:uuid>')
+    api.add_resource(invoice.VoidInvoice, '/invoice/void/<string:uuid>')
+    api.add_resource(shares.Shares, '/shares')
+
+    # validations
+    api.add_resource(validations.EmailDuplicate, '/validations/email-duplicate')
+    api.add_resource(validations.LoanValidation, '/validations/loan-qualify/<string:uuid>')
 
     return app

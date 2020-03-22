@@ -1,5 +1,11 @@
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from internals.app import db
 from schemas.loans import LoanSchema
+from flask_sqlalchemy import sqlalchemy
+
+backref = sqlalchemy.orm.backref
+desc = sqlalchemy.desc
 
 
 class Loans(db.Model):
@@ -59,9 +65,9 @@ class Loans(db.Model):
         db.Integer,
         nullable=False
     )
-    loan_payment_start_date = db.Column(
-        db.Date,
-        nullable=False
+    loan_category = db.Column(
+        db.String,
+        nullable=True
     )
     created_at = db.Column(
         db.DATETIME,
@@ -96,6 +102,11 @@ class Loans(db.Model):
         foreign_keys=[co_maker_2_id],
         uselist=False
     )
+    loanInvoice = db.relationship(
+        'Invoices',
+        lazy=True,
+        backref=backref('loanInfo', order_by=desc('Invoices.created_at'))
+    )
     disbursment = db.relationship(
         'Disbursments',
         lazy=True,
@@ -107,6 +118,29 @@ class Loans(db.Model):
         backref='loanInfo',
         lazy=True
     )
+
+    @hybrid_property
+    def net_loan_balance(self):
+        loan_amount = self.loan_amount
+        interest = (loan_amount * (self.interest / 100)) * self.payment_term
+        service_charge = loan_amount * (self.service_charge / 100)
+        capital_build = loan_amount * (self.capital_build_up / 100)
+        return loan_amount - interest - service_charge - capital_build
+
+    @hybrid_property
+    def net_loan_per_month(self):
+        return self.net_loan_balance / self.payment_term
+
+    @hybrid_property
+    def remaining_balance(self):
+        paidAmount = list(map(lambda x: x.amount, self.reciepts))
+        return self.net_loan_balance - sum(paidAmount)
+
+    @hybrid_property
+    def capital_build_up_amount(self):
+        loan_amount = self.loan_amount
+        capital_build = loan_amount * (self.capital_build_up / 100)
+        return capital_build
 
 
 def loan_schema(many=False, **kwargs):

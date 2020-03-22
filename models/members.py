@@ -1,11 +1,19 @@
 from marshmallow import Schema, fields
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import desc, case
 
 from internals.app import db
 from models.users import Users
 from models.loans import Loans
 from models.beneficiaries import Beneficiaries
 from models.shares import MemberShares
+from models.invoices import Invoices
+from models.reciepts import Reciepts
 from schemas.members import MemberSchema
+
+invoice_order = case([(Invoices.status == 'pending', 0), (Invoices.status == 'paid', 1), (Invoices.status == 'void', 2)], None)
+loan_order = case([(Loans.status == 'pending', 0), (Loans.status == 'void', 1), (Loans.status == 'paid', 2)], None)
+reciept_order = case([(Reciepts.reciept_type == 'loan', 0), (Reciepts.reciept_type == 'shares', 1), (Reciepts.reciept_type == 'membership', 2)], None)
 
 
 class Members(db.Model):
@@ -111,7 +119,8 @@ class Members(db.Model):
         Loans,
         lazy=True,
         backref='member_info',
-        foreign_keys=[Loans.member_id]
+        foreign_keys=[Loans.member_id],
+        order_by=[loan_order, desc(Loans.created_at)]
     )
     beneficiaries = db.relationship(
         Beneficiaries,
@@ -131,6 +140,34 @@ class Members(db.Model):
         backref='memberInfo',
         foreign_keys=[Users.member_id]
     )
+    invoices = db.relationship(
+        Invoices,
+        lazy=True,
+        backref='memberInfo',
+        order_by=[invoice_order, desc(Invoices.created_at)],
+        foreign_keys=[Invoices.member_id]
+    )
+
+    @hybrid_property
+    def reciepts(self):
+        return db.session.query(Reciepts)\
+            .join(Invoices)\
+            .filter(Invoices.member_id == self.id)\
+            .filter(Invoices.id == Reciepts.invoice_id)\
+            .order_by(reciept_order)\
+            .order_by(desc(Reciepts.created_at))\
+            .all()
+
+    @hybrid_property
+    def outstanding_invoice(self):
+        unpaidInvoices = list(filter(lambda x: x.status == 'pending', self.invoices))
+        values = list(map(lambda x: x.amount, unpaidInvoices))
+        return sum(values)
+
+    @hybrid_property
+    def available_collateral(self):
+        values = list(map(lambda x: x.share_count * x.share_per_amount, self.shares))
+        return sum(values)
 
 
 def member_schema(many=False, **kwargs):

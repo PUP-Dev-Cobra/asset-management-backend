@@ -58,8 +58,7 @@ def seed_options():
         Options(option_name='loan_status', option_value='pending'),
         Options(option_name='loan_status', option_value='approved'),
         Options(option_name='loan_status', option_value='rejected'),
-        Options(option_name='loan_status', option_value='closed'),
-        Options(option_name='loan_status', option_value='default')
+        Options(option_name='loan_status', option_value='closed')
     ]
     civilStatus = [
         Options(option_name='civil_status', option_value='single'),
@@ -96,10 +95,19 @@ def seed_options():
     capitalBuildUp = [
         Options(option_name='captial_build_up', option_value='2')
     ]
+    memberShareOption = [
+        Options(option_name='share_per_amount', option_value='10')
+    ]
     memberStatus = [
         Options(option_name='member_status', option_value='draft'),
         Options(option_name='member_status', option_value='pending'),
         Options(option_name='member_status', option_value='approved')
+    ]
+    loanCategory = [
+        Options(option_name='loan_category', option_value='personal'),
+        Options(option_name='loan_category', option_value='education'),
+        Options(option_name='loan_category', option_value='housing'),
+        Options(option_name='loan_category', option_value='medical'),
     ]
     dbs.bulk_save_objects(userStatus)
     dbs.bulk_save_objects(userType)
@@ -112,6 +120,8 @@ def seed_options():
     dbs.bulk_save_objects(interest)
     dbs.bulk_save_objects(capitalBuildUp)
     dbs.bulk_save_objects(memberStatus)
+    dbs.bulk_save_objects(memberShareOption)
+    dbs.bulk_save_objects(loanCategory)
     dbs.commit()
 
 

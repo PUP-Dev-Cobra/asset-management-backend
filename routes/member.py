@@ -1,13 +1,18 @@
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, current_app
 from flask_restful import Resource, reqparse
 from datetime import datetime
 from uuid import uuid4
 
 from internals.app import db
+from internals.mailgun import send_simple_message
 from internals.utils import token_required, decode_token, user_check
+from models.users import Users as UserModel
 from models.members import Members as MemberModel, member_schema
 from models.beneficiaries import Beneficiaries as BeneficiariesModel
 from models.shares import MemberShares as MemberSharesModel
+from models.invoices import Invoices as InvoiceModel
+
+from pathlib import Path
 
 
 class Member(Resource):
@@ -19,13 +24,15 @@ class Member(Resource):
 
         return make_response(result, 200)
 
-    @token_required
-    @user_check(user_type=['teller'])
     def post(self):
+        app = current_app
         params = request.get_json(force=True)
-        memberInfo = decode_token()
 
         memberData = params.get('memberForm')
+
+        email = memberData.get('email')
+        del memberData['email']
+
         beneficiaries = None
         share = None
         if memberData.get('share'):
@@ -38,9 +45,10 @@ class Member(Resource):
 
         params = {
             **memberData,
+            'status': 'pending',
             'uuid': uuid4(),
             'created_at': datetime.now(),
-            'created_by_id': memberInfo['id']
+            'created_by_id': None
         }
 
         try:
@@ -59,6 +67,20 @@ class Member(Resource):
                 db.session.add(memberParams)
                 db.session.commit()
 
+                # Create member data
+                userInfo = {
+                    'uuid': uuid4(),
+                    'email': email,
+                    'password': 'placeholder',
+                    'user_type': 'member',
+                    'name': "%s" % (memberParams.first_name),
+                    'member_id': memberParams.id,
+                    'created_at': datetime.now(),
+                    'status': 'disabled'
+                }
+                db.session.add(UserModel(**userInfo))
+                db.session.commit()
+
                 # Add any beneficiaries in the table
                 if beneficiaries:
                     dbs = db.session
@@ -68,27 +90,72 @@ class Member(Resource):
                             **beneficiary,
                             'member_id': memberParams.id,
                             'created_at': datetime.now(),
-                            'created_by_id': memberInfo['id']
+                            'created_by_id': None
                         }
                         beneficiaryCommit.append(BeneficiariesModel(**benefitParams))
                     dbs.bulk_save_objects(beneficiaryCommit)
                     dbs.commit()
 
                 if share:
-                    newShareParams = {
-                        **share,
-                        'member_id': memberParams.id,
-                        'created_at': datetime.now(),
-                        'created_by_id': memberInfo['id']
+                    # Rather than adding shares,
+                    # create an invoice
 
+                    amount = float(share['share_count']) * float(share['share_per_amount'])
+                    print(share, 'share')
+                    invoiceInfo = {
+                        'uuid': uuid4(),
+                        'invoice_type': 'shares',
+                        'member_id': memberParams.id,
+                        'status': 'pending',
+                        'amount': amount
                     }
-                    newShare = MemberSharesModel(**newShareParams)
-                    db.session.add(newShare)
-                    db.session.commit()
+                    InvoiceModel()\
+                        .createInvoice(
+                            invoiceInfo=invoiceInfo,
+                            name=memberParams.first_name)
+
+                # Create an invoice for member registration
+                invoiceInfo = {
+                    'uuid': uuid4(),
+                    'invoice_type': 'membership',
+                    'member_id': memberParams.id,
+                    'status': 'pending',
+                    'amount': 250
+                }
+                InvoiceModel()\
+                    .createInvoice(
+                    invoiceInfo=invoiceInfo,
+                    name=memberParams.first_name
+                )
+
+                # Send email confirming the registration
+                previewUrl = "%s/member/preview/%s" \
+                    % (app.config['FRONT_END_DOMAIN'], memberParams.uuid)
+
+                approverUrl = "%s/member/%s" % (app.config['FRONT_END_DOMAIN'], memberParams.uuid)
+
+                # For applicaiton member
+                send_simple_message(
+                    subject='Thank you for Registering',
+                    text=Path('./templates/signup.template.html')
+                    .read_text()
+                    .replace("{{name}}", memberParams.first_name)
+                    .replace("{{url}}", previewUrl)
+                )
+
+                # For Approver
+                send_simple_message(
+                    subject="%s wants to join our co-op" % (memberParams.first_name),
+                    text=Path('./templates/forapproval.template.html')
+                    .read_text()
+                    .replace("{{name}}", "Approvers")
+                    .replace("{{clientName}}", memberParams.first_name)
+                    .replace("{{url}}", approverUrl)
+                )
 
                 return {'response': memberParams.uuid}
             return make_response({'error': 'Member is already registered'}, 500)
-        except Exception as e:
+        except NameError as e:
             print(e)
             return make_response({'error': 'Something went wrong'}, 500)
 
@@ -141,7 +208,8 @@ class Member(Resource):
                     .query\
                     .filter_by(uuid=uuid)\
                     .update(updateMemberData)
-                db.session.commit()
+
+                memberInfo = MemberModel.query.filter_by(uuid=uuid).first()
 
                 if userType == 'teller':
                     if beneficiaries:
@@ -183,6 +251,33 @@ class Member(Resource):
                         del share['id']
                         MemberSharesModel.query.filter_by(id=shareId).update(share)
                         db.session.commit()
+
+                # Send email to the user for the status
+
+                if userType == 'approver':
+                    status = updateMemberData['status']
+
+                    send_simple_message(
+                        subject="Your Appliation is %s" % (status),
+                        text=Path('./templates/formStatus.template.html')
+                        .read_text()
+                        .replace("{{status}}", status)
+                        .replace("{{name}}", memberInfo.first_name)
+                    )
+
+                    if status == 'approved':
+                        # Approve User
+                        UserModel\
+                            .query\
+                            .filter_by(member_id=memberInfo.id)\
+                            .update({
+                                'status': 'active',
+                                'updated_at': datetime.now(),
+                                'updated_by_id': userInfo['id']
+                            })
+                        UserModel()\
+                            .createForgotPassword(email=memberInfo.userInfo.email)
+                db.session.commit()
 
                 return {'response': True}
             return make_response({'error': 'User is already made'}, 500)

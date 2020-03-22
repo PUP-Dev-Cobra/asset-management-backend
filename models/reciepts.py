@@ -1,6 +1,8 @@
 from internals.app import db
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from schemas.reciept import RecieptSchema
+from models.invoices import Invoices
 
 
 class Reciepts(db.Model):
@@ -23,12 +25,12 @@ class Reciepts(db.Model):
     loan_id = db.Column(
         db.Integer,
         db.ForeignKey('loans.id'),
-        nullable=False,
-        default=0
-    )
-    loan_payment_term = db.Column(
-        db.Integer,
         nullable=True
+    )
+    invoice_id = db.Column(
+        db.Integer,
+        db.ForeignKey('invoices.id'),
+        nullable=False
     )
     or_number = db.Column(
         db.String,
@@ -55,6 +57,12 @@ class Reciepts(db.Model):
         db.Integer,
         db.ForeignKey('users.id'),
         nullable=True
+    )
+    invoice = db.relationship(
+        Invoices,
+        uselist=False,
+        lazy=True,
+        backref='recieptInfo'
     )
 
 

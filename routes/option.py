@@ -7,7 +7,6 @@ from internals.utils import token_required, decode_token, user_check
 
 class Options(Resource):
 
-    @token_required
     def get(self):
         try:
             option_name = request.args.get('option_name')
