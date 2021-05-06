@@ -15,7 +15,7 @@ decorator==4.4.1
 entrypoints==0.3
 flake8==3.7.9
 Flask==1.1.1
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 Flask-Migrate==2.5.2
 Flask-Modus==0.0.1
 Flask-RESTful==0.3.7
